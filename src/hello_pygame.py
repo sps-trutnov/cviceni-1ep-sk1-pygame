@@ -1,43 +1,44 @@
+# pouzite knihovny
 import pygame
 import sys
 import random
 
-pygame.init()
-
+# nastaveni aplikace
 rozmer_okna_x = 1600
 rozmer_okna_y = 900
-okno = pygame.display.set_mode((rozmer_okna_x, rozmer_okna_y))
 
-cernobily_rezim = True
+cernobily_rezim = False
 max_velikost_micku = 50
+
 pocet_micku = 6000
 
-x = []
-y = []
+# logika aplikace
+pygame.init()
 
-w = []
-h = []
+okno = pygame.display.set_mode((rozmer_okna_x, rozmer_okna_y))
+pygame.display.set_caption("Míčkyyy!")
 
-dx = []
-dy = []
-
-rgb = []
+micky = []
 
 for i in range(pocet_micku):
-    w.append(random.randint(1, max_velikost_micku))
-    h.append(w[i])
+    micek = dict()
     
-    x.append(random.randint(0, rozmer_okna_x - w[i]))
-    y.append(random.randint(0, rozmer_okna_y - h[i]))
+    micek['w'] = random.randint(1, max_velikost_micku)
+    micek['h'] = micek['w']
     
-    dx.append(random.random())
-    dy.append(random.random())
+    micek['x']= random.randint(0, rozmer_okna_x - micek['w'])
+    micek['y'] = random.randint(0, rozmer_okna_y - micek['h'])
+    
+    micek['dx'] = random.random()
+    micek['dy'] = random.random()
     
     if cernobily_rezim:
         odstin = random.randint(0, 254)
-        rgb.append((odstin, odstin, odstin))
+        micek['rgb'] = (odstin, odstin, odstin)
     else:
-        rgb.append((random.randint(0, 254), random.randint(0, 254), random.randint(0, 254)))
+        micek['rgb'] = (random.randint(0, 254), random.randint(0, 254), random.randint(0, 254))
+    
+    micky.append(micek)
 
 while True:
     for udalost in pygame.event.get():
@@ -46,29 +47,23 @@ while True:
     
     okno.fill((255, 255, 255))
     
-    for i in range(len(x)):
-        x[i] = x[i] + dx[i]
-
-    for i in range(len(y)):
-        y[i] = y[i] + dy[i]
-    
-    for i in range(len(y)):
-        if y[i] < 0:
-            y[i] = 0
-            dy[i] *= -1
-        if y[i] > rozmer_okna_y - h[i]:
-            y[i] = rozmer_okna_y - h[i]
-            dy[i] *= -1
+    for micek in micky:
+        micek['x'] = micek['x'] + micek['dx']
+        micek['y'] = micek['y'] + micek['dy']
         
-    for i in range(len(x)):
-        if x[i] < 0:
-            x[i] = 0
-            dx[i] *= -1
-        if x[i] > rozmer_okna_x - w[i]:
-            x[i] = rozmer_okna_x - w[i]
-            dx[i] *= -1
+        if micek['y'] < 0:
+            micek['y'] = 0
+            micek['dy'] *= -1
+        if micek['y'] > rozmer_okna_y - micek['h']:
+            micek['y'] = rozmer_okna_y - micek['h']
+            micek['dy'] *= -1
+        if micek['x'] < 0:
+            micek['x'] = 0
+            micek['dx'] *= -1
+        if micek['x'] > rozmer_okna_x - micek['w']:
+            micek['x'] = rozmer_okna_x - micek['w']
+            micek['dx'] *= -1
     
-    for i in range(len(x)):
-        pygame.draw.ellipse(okno, rgb[i], (x[i], y[i], w[i], h[i]))
+        pygame.draw.ellipse(okno, micek['rgb'], (micek['x'], micek['y'], micek['w'], micek['h']))
     
     pygame.display.update()
