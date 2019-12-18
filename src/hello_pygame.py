@@ -29,8 +29,8 @@ for i in range(pocet_micku):
     micek['x']= random.randint(0, rozmer_okna_x - micek['w'])
     micek['y'] = random.randint(0, rozmer_okna_y - micek['h'])
     
-    micek['dx'] = random.random()
-    micek['dy'] = random.random()
+    micek['dx'] = random.random() * random.choice([-1, 1])
+    micek['dy'] = random.random() * random.choice([-1, 1])
     
     if cernobily_rezim:
         odstin = random.randint(0, 254)
