@@ -28,10 +28,10 @@ micek_dx = random.random() * random.choice([-1, 1])
 micek_dy = random.random() * random.choice([-1, 1])
 
 if cernobily_rezim:
-    odstin = random.randint(0, 254)
+    odstin = random.randint(1, 254)
     micek_rgb = (odstin, odstin, odstin)
 else:
-    micek_rgb = (random.randint(0, 254), random.randint(0, 254), random.randint(0, 254))
+    micek_rgb = (random.randint(1, 254), random.randint(1, 254), random.randint(1, 254))
 
 while True:
     for udalost in pygame.event.get():
