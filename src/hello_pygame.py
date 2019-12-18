@@ -24,8 +24,8 @@ micek_h = micek_w
 micek_x= random.randint(0, rozmer_okna_x - micek_w)
 micek_y = random.randint(0, rozmer_okna_y - micek_h)
 
-micek_dx = random.random()
-micek_dy = random.random()
+micek_dx = random.random() * random.choice([-1, 1])
+micek_dy = random.random() * random.choice([-1, 1])
 
 if cernobily_rezim:
     odstin = random.randint(0, 254)
