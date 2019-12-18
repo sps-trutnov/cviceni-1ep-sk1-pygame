@@ -42,6 +42,8 @@ for i in range(pocet_micku):
 
 while True:
     for udalost in pygame.event.get():
+        if udalost.type == pygame.KEYDOWN and udalost.key == pygame.K_ESCAPE:
+            sys.exit()
         if udalost.type == pygame.QUIT:
             sys.exit()
     
