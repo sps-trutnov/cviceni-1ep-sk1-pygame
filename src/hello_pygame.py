@@ -7,7 +7,8 @@ import random
 rozmer_okna_x = 1600
 rozmer_okna_y = 900
 
-cernobily_rezim = False
+barevne_rezimy = ('celocerny', 'cernobily', 'barevny')
+barevny_rezim = barevne_rezimy[2]
 max_velikost_micku = 50
 
 pocet_micku = 6000
@@ -32,10 +33,13 @@ for i in range(pocet_micku):
     micek['dx'] = random.random() * random.choice([-1, 1])
     micek['dy'] = random.random() * random.choice([-1, 1])
     
-    if cernobily_rezim:
+    if barevny_rezim == 'celocerny':
+        odstin = 0
+        micek['rgb'] = (odstin, odstin, odstin)
+    elif barevny_rezim == 'cernobily':
         odstin = random.randint(1, 254)
         micek['rgb'] = (odstin, odstin, odstin)
-    else:
+    elif barevny_rezim == 'barevny':
         micek['rgb'] = (random.randint(1, 254), random.randint(1, 254), random.randint(1, 254))
     
     micky.append(micek)
