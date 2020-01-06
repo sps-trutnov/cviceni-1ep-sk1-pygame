@@ -21,7 +21,7 @@ micek = dict()
 micek_w = random.randint(1, max_velikost_micku)
 micek_h = micek_w
 
-micek_x= random.randint(0, rozmer_okna_x - micek_w)
+micek_x = random.randint(0, rozmer_okna_x - micek_w)
 micek_y = random.randint(0, rozmer_okna_y - micek_h)
 
 micek_dx = random.random() * random.choice([-1, 1])
