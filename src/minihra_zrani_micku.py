@@ -4,6 +4,50 @@ import sys
 import math
 import random
 
+# nastaveni aplikace
+rozmer_okna_x = 800
+rozmer_okna_y = 600
+
+cernobily_rezim = False
+max_velikost_micku = 50
+
+rychlost_hrace = 2
+pocet_micku = 100
+
+# pomocne podprogramy
+def vypnout_aplikaci():
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.KEYDOWN and udalost.key == pygame.K_ESCAPE:
+            sys.exit()
+        if udalost.type == pygame.QUIT:
+            sys.exit()
+
+def vytvorit_micky():
+    micky = []
+    
+    for i in range(pocet_micku):
+        micek = dict()
+
+        micek["w"] = micek["h"] = random.randint(5, max_velikost_micku)
+
+        micek["x"] = random.randint(0, rozmer_okna_x - micek["w"])
+        micek["y"] = random.randint(0, rozmer_okna_y - micek["h"])
+
+        micek["dx"] = random.random() * random.choice([-1, 1])
+        micek["dy"] = random.random() * random.choice([-1, 1])
+
+        micek["sezrany"] = False
+
+        if cernobily_rezim:
+            odstin = random.randint(5, 250)
+            micek["rgb"] = (odstin, odstin, odstin)
+        else:
+            micek["rgb"] = (random.randint(5, 250), random.randint(5, 250), random.randint(5, 250))
+        
+        micky.append(micek)
+    else:
+        return micky
+
 def udrzet_v_okne(obrazec):
     if obrazec["y"] < 0:
         obrazec["y"] = 0
@@ -23,6 +67,10 @@ def odrazit_od_kraje(obrazec):
         obrazec["dx"] *= -1
     if obrazec["x"] > rozmer_okna_x - obrazec["w"]:
         obrazec["dx"] *= -1    
+
+def pohnout_s_mickem(micek):
+    micek["x"] = micek["x"] + micek["dx"]
+    micek["y"] = micek["y"] + micek["dy"]
 
 def ovladat_hrace(hrac):
     stisknuto = pygame.key.get_pressed()
@@ -49,6 +97,9 @@ def ovladat_hrace(hrac):
 
 def sezrat_okolni_micky(hrac, micky):
     for micek in micky:
+        if micek["sezrany"]:
+            continue
+        
         soucet_polomeru = (micek["w"] + hrac["w"]) / 2
         
         x1 = hrac["x"] + hrac["w"] / 2
@@ -60,21 +111,24 @@ def sezrat_okolni_micky(hrac, micky):
     
         if vzdalenost_stredu < soucet_polomeru:
             micek["sezrany"] = True
+            #zvetsit_hrace(hrac)
 
 def obnovit_po_sezrani_vsech(micky):
     for micek in micky:
         if not micek["sezrany"]:
             return
     
+    hrac["w"] = hrac["h"] = max_velikost_micku
+    
     for micek in micky:
         micek["sezrany"] = False
 
-# nastaveni aplikace
-rozmer_okna_x = 800
-rozmer_okna_y = 600
-
-cernobily_rezim = False
-max_velikost_micku = 50
+def zvetsit_hrace(hrac):
+    hrac["x"] -= 1
+    hrac["y"] -= 1
+    
+    hrac["w"] += 2
+    hrac["h"] += 2
 
 # logika aplikace
 pygame.init()
@@ -82,69 +136,38 @@ pygame.init()
 okno = pygame.display.set_mode((rozmer_okna_x, rozmer_okna_y))
 pygame.display.set_caption("Míčkyyy!")
 
-rychlost_hrace = 2
-pocet_micku = 1000
-vsechny_micky = []
-
-for i in range(pocet_micku):
-    micek = dict()
-
-    micek["w"] = random.randint(1, max_velikost_micku)
-    micek["h"] = micek["w"]
-
-    micek["x"] = random.randint(0, rozmer_okna_x - micek["w"])
-    micek["y"] = random.randint(0, rozmer_okna_y - micek["h"])
-
-    micek["dx"] = random.random() * random.choice([-1, 1])
-    micek["dy"] = random.random() * random.choice([-1, 1])
-
-    micek["sezrany"] = False
-
-    if cernobily_rezim:
-        odstin = random.randint(0, 254)
-        micek["rgb"] = (odstin, odstin, odstin)
-    else:
-        micek["rgb"] = (random.randint(0, 254), random.randint(0, 254), random.randint(0, 254))
-    
-    vsechny_micky.append(micek)
+vsechny_micky = vytvorit_micky()
 
 hrac = dict()
 
-hrac["w"] = 50
-hrac["h"] = hrac["w"]
+hrac["w"] = hrac["h"] = max_velikost_micku
 
 hrac["x"] = (rozmer_okna_x - hrac["w"]) / 2
 hrac["y"] = (rozmer_okna_y - hrac["h"]) / 2
 
 hrac["v"] = rychlost_hrace
-
 hrac["rgb"] = (0, 0, 0)
 
 while True:
-    for udalost in pygame.event.get():
-        if udalost.type == pygame.KEYDOWN and udalost.key == pygame.K_ESCAPE:
-            sys.exit()
-        if udalost.type == pygame.QUIT:
-            sys.exit()
+    vypnout_aplikaci()        
     
-    okno.fill((255, 255, 255))
-
     for micek in vsechny_micky:
-        micek["x"] = micek["x"] + micek["dx"]
-        micek["y"] = micek["y"] + micek["dy"]
-        
+        pohnout_s_mickem(micek)
         odrazit_od_kraje(micek)
         udrzet_v_okne(micek)
         
-        if not micek["sezrany"]:
-            pygame.draw.ellipse(okno, micek["rgb"], (micek["x"], micek["y"], micek["w"], micek["h"]))
-    
     ovladat_hrace(hrac)
     udrzet_v_okne(hrac)
     
     sezrat_okolni_micky(hrac, vsechny_micky)
     obnovit_po_sezrani_vsech(vsechny_micky)
     
-    pygame.draw.ellipse(okno, hrac["rgb"], (hrac["x"], hrac["y"], hrac["w"], hrac["h"]))
+    okno.fill((255, 255, 255))
+    
+    for micek in vsechny_micky:
+        if not micek["sezrany"]:
+            pygame.draw.ellipse(okno, micek["rgb"], (micek["x"], micek["y"], micek["w"], micek["h"]))
+    else:
+        pygame.draw.ellipse(okno, hrac["rgb"], (hrac["x"], hrac["y"], hrac["w"], hrac["h"]))
     
     pygame.display.update()
