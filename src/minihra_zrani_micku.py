@@ -24,6 +24,19 @@ def vypnout_aplikaci():
         if udalost.type == pygame.QUIT:
             sys.exit()
 
+def vytvorit_hrace():
+    hrac = dict()
+
+    hrac["w"] = hrac["h"] = max_velikost_micku
+
+    hrac["x"] = (rozmer_okna_x - hrac["w"]) / 2
+    hrac["y"] = (rozmer_okna_y - hrac["h"]) / 2
+
+    hrac["v"] = rychlost_hrace
+    hrac["rgb"] = (0, 0, 0)
+    
+    return hrac
+
 def vytvorit_micky():
     micky = []
     
@@ -119,35 +132,35 @@ def zrat_okolni_micky(hrac, micky):
         y2 = micek["y"] + micek["h"] / 2
         
         vzdalenost_stredu = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-    
+        
         if vzdalenost_stredu < soucet_polomeru:
-            rozdil = soucet_polomeru - vzdalenost_stredu
-            
-            if rozdil > micek["w"]:
-                rozdil = micek["w"]
+            rozdil = min(soucet_polomeru - vzdalenost_stredu, micek["w"])
             
             zvetsit_hrace(hrac, rozdil)
             zmensit_micek(micek, rozdil)
 
-def obnovit_po_sezrani_vsech(micky):
+def obnovit_po_sezrani(hrac, micky):
     for micek in micky:
         if not micek["sezrany"]:
             return
     
     hrac["w"] = hrac["h"] = max_velikost_micku
     
+    hrac["x"] = (rozmer_okna_x - hrac["w"]) / 2
+    hrac["y"] = (rozmer_okna_y - hrac["h"]) / 2
+    
     for micek in micky:
         micek["w"] = micek["h"] = random.randint(min_velikost_micku, max_velikost_micku)
         micek["sezrany"] = False
 
 def zvetsit_hrace(hrac, jak_moc):
-    plocha = math.sqrt(jak_moc)
+    jak_moc = jak_moc / 6
     
-    hrac["w"] += jak_moc / 2
-    hrac["h"] += jak_moc / 2
+    hrac["w"] += jak_moc
+    hrac["h"] += jak_moc
     
-    #hrac["x"] -= plocha / 2
-    #hrac["y"] -= plocha / 2
+    hrac["x"] -= jak_moc / 2
+    hrac["y"] -= jak_moc / 2
     
 def zmensit_micek(micek, jak_moc):
     micek["w"] -= jak_moc
@@ -166,16 +179,7 @@ okno = pygame.display.set_mode((rozmer_okna_x, rozmer_okna_y))
 pygame.display.set_caption("Míčkyyy!")
 
 vsechny_micky = vytvorit_micky()
-
-hrac = dict()
-
-hrac["w"] = hrac["h"] = max_velikost_micku
-
-hrac["x"] = (rozmer_okna_x - hrac["w"]) / 2
-hrac["y"] = (rozmer_okna_y - hrac["h"]) / 2
-
-hrac["v"] = rychlost_hrace
-hrac["rgb"] = (0, 0, 0)
+hrac = vytvorit_hrace()
 
 while True:
     vypnout_aplikaci()        
@@ -189,7 +193,7 @@ while True:
     udrzet_v_okne(hrac)
     
     zrat_okolni_micky(hrac, vsechny_micky)
-    obnovit_po_sezrani_vsech(vsechny_micky)
+    obnovit_po_sezrani(hrac, vsechny_micky)
     
     okno.fill((255, 255, 255))
     
