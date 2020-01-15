@@ -11,9 +11,9 @@ rozmer_okna_y = 600
 cernobily_rezim = False
 min_velikost_micku = 5
 max_velikost_micku = 50
-max_rychlost_micku = 0.5
+max_rychlost_micku = 0.1
 
-rychlost_hrace = 0.8
+rychlost_hrace = 0.2
 pocet_micku = 100
 
 # pomocne podprogramy
@@ -106,12 +106,12 @@ def ovladat_hrace(hrac):
     hrac["x"] += vektor_hrace["x"] * hrac["v"]
     hrac["y"] += vektor_hrace["y"] * hrac["v"]
 
-def sezrat_okolni_micky(hrac, micky):
+def zrat_okolni_micky(hrac, micky):
     for micek in micky:
         if micek["sezrany"]:
             continue
         
-        soucet_polomeru = (micek["w"] + hrac["w"]) / 2
+        soucet_polomeru = (hrac["w"] + micek["w"]) / 2
         
         x1 = hrac["x"] + hrac["w"] / 2
         x2 = micek["x"] + micek["w"] / 2
@@ -121,8 +121,13 @@ def sezrat_okolni_micky(hrac, micky):
         vzdalenost_stredu = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     
         if vzdalenost_stredu < soucet_polomeru:
-            micek["sezrany"] = True
-            #zvetsit_hrace(hrac)
+            rozdil = soucet_polomeru - vzdalenost_stredu
+            
+            if rozdil > micek["w"]:
+                rozdil = micek["w"]
+            
+            zvetsit_hrace(hrac, rozdil)
+            zmensit_micek(micek, rozdil)
 
 def obnovit_po_sezrani_vsech(micky):
     for micek in micky:
@@ -132,14 +137,27 @@ def obnovit_po_sezrani_vsech(micky):
     hrac["w"] = hrac["h"] = max_velikost_micku
     
     for micek in micky:
+        micek["w"] = micek["h"] = random.randint(min_velikost_micku, max_velikost_micku)
         micek["sezrany"] = False
 
-def zvetsit_hrace(hrac):
-    hrac["x"] -= 1
-    hrac["y"] -= 1
+def zvetsit_hrace(hrac, jak_moc):
+    plocha = math.sqrt(jak_moc)
     
-    hrac["w"] += 2
-    hrac["h"] += 2
+    hrac["w"] += jak_moc / 2
+    hrac["h"] += jak_moc / 2
+    
+    #hrac["x"] -= plocha / 2
+    #hrac["y"] -= plocha / 2
+    
+def zmensit_micek(micek, jak_moc):
+    micek["w"] -= jak_moc
+    micek["h"] -= jak_moc
+    
+    micek["x"] += jak_moc / 2
+    micek["y"] += jak_moc / 2
+    
+    if micek["w"] < min_velikost_micku:
+        micek["sezrany"] = True
 
 # logika aplikace
 pygame.init()
@@ -170,7 +188,7 @@ while True:
     ovladat_hrace(hrac)
     udrzet_v_okne(hrac)
     
-    sezrat_okolni_micky(hrac, vsechny_micky)
+    zrat_okolni_micky(hrac, vsechny_micky)
     obnovit_po_sezrani_vsech(vsechny_micky)
     
     okno.fill((255, 255, 255))
