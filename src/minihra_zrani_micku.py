@@ -10,8 +10,9 @@ rozmer_okna_y = 600
 
 cernobily_rezim = False
 max_velikost_micku = 50
+max_rychlost_micku = 0.5
 
-rychlost_hrace = 2
+rychlost_hrace = 0.8
 pocet_micku = 100
 
 # pomocne podprogramy
@@ -35,6 +36,15 @@ def vytvorit_micky():
 
         micek["dx"] = random.random() * random.choice([-1, 1])
         micek["dy"] = random.random() * random.choice([-1, 1])
+
+        korekce = math.sqrt(micek["dx"] ** 2 + micek["dy"] ** 2)
+        
+        if korekce > 0:
+            micek["dx"] /= korekce
+            micek["dy"] /= korekce
+        
+        micek["dx"] *= max_rychlost_micku
+        micek["dy"] *= max_rychlost_micku
 
         micek["sezrany"] = False
 
