@@ -9,6 +9,7 @@ rozmer_okna_x = 800
 rozmer_okna_y = 600
 
 cernobily_rezim = False
+min_velikost_micku = 5
 max_velikost_micku = 50
 max_rychlost_micku = 0.5
 
@@ -29,7 +30,7 @@ def vytvorit_micky():
     for i in range(pocet_micku):
         micek = dict()
 
-        micek["w"] = micek["h"] = random.randint(5, max_velikost_micku)
+        micek["w"] = micek["h"] = random.randint(min_velikost_micku, max_velikost_micku)
 
         micek["x"] = random.randint(0, rozmer_okna_x - micek["w"])
         micek["y"] = random.randint(0, rozmer_okna_y - micek["h"])
