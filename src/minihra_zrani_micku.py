@@ -13,8 +13,8 @@ min_velikost_micku = 5
 max_velikost_micku = 50
 max_rychlost_micku = 0.1
 
-rychlost_hrace = 0.2
-pocet_micku = 100
+rychlost_hrace = 0.8
+pocet_micku = 200
 
 # pomocne podprogramy
 def vypnout_aplikaci():
@@ -120,6 +120,8 @@ def ovladat_hrace(hrac):
     hrac["y"] += vektor_hrace["y"] * hrac["v"]
 
 def zrat_okolni_micky(hrac, micky):
+    prirustek_velikosti = 0
+    
     for micek in micky:
         if micek["sezrany"]:
             continue
@@ -136,8 +138,10 @@ def zrat_okolni_micky(hrac, micky):
         if vzdalenost_stredu < soucet_polomeru:
             rozdil = min(soucet_polomeru - vzdalenost_stredu, micek["w"])
             
-            zvetsit_hrace(hrac, rozdil)
+            prirustek_velikosti += rozdil
             zmensit_micek(micek, rozdil)
+    else:
+        zvetsit_hrace(hrac, prirustek_velikosti)
 
 def obnovit_po_sezrani(hrac, micky):
     for micek in micky:
@@ -150,8 +154,8 @@ def obnovit_po_sezrani(hrac, micky):
     hrac["y"] = (rozmer_okna_y - hrac["h"]) / 2
     
     for micek in micky:
-        micek["w"] = micek["h"] = random.randint(min_velikost_micku, max_velikost_micku)
         micek["sezrany"] = False
+        micek["w"] = micek["h"] = random.randint(min_velikost_micku, max_velikost_micku)
 
 def zvetsit_hrace(hrac, jak_moc):
     jak_moc = jak_moc / 6
@@ -159,8 +163,11 @@ def zvetsit_hrace(hrac, jak_moc):
     hrac["w"] += jak_moc
     hrac["h"] += jak_moc
     
-    hrac["x"] -= jak_moc / 2
-    hrac["y"] -= jak_moc / 2
+    if hrac["w"] > rozmer_okna_x or hrac["h"] > rozmer_okna_y:
+        hrac["w"] = hrac["h"] = min(rozmer_okna_x, rozmer_okna_y)
+    else:
+        hrac["x"] -= jak_moc / 2
+        hrac["y"] -= jak_moc / 2
     
 def zmensit_micek(micek, jak_moc):
     micek["w"] -= jak_moc
@@ -190,10 +197,9 @@ while True:
         udrzet_v_okne(micek)
         
     ovladat_hrace(hrac)
-    udrzet_v_okne(hrac)
-    
     zrat_okolni_micky(hrac, vsechny_micky)
-    obnovit_po_sezrani(hrac, vsechny_micky)
+    udrzet_v_okne(hrac)
+    obnovit_po_sezrani(hrac, vsechny_micky)    
     
     okno.fill((255, 255, 255))
     
