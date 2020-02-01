@@ -27,7 +27,7 @@ for i in range(pocet_micku):
     micek['w'] = random.randint(1, max_velikost_micku)
     micek['h'] = micek['w']
     
-    micek['x']= random.randint(0, rozmer_okna_x - micek['w'])
+    micek['x'] = random.randint(0, rozmer_okna_x - micek['w'])
     micek['y'] = random.randint(0, rozmer_okna_y - micek['h'])
     
     micek['dx'] = random.random() * random.choice([-1, 1])
